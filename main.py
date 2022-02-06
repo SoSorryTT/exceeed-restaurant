@@ -32,15 +32,19 @@ def get_reservation_by_table(table: int):
 def reserve(reservation : Reservation):
     pass
 
-@app.put("/reservation/update/")
+@app.put("/reservation/update/{new_reservation_time}")
 def update_reservation(reservation: Reservation, new_reservation_time: int):
     myquery = {"name": reservation.name, "time": reservation.time}
-    free = collection.find(myquery)
     new = { "$set": {"time": new_reservation_time}}
-    if free == None:
+    check_time = {"time": new_reservation_time, "table_number": reservation.table_number}
+    free = collection.find(check_time)
+    if len(list(free)) == 0:
         collection.update_one(myquery, new)
-    else:
-        return HTTPException(404, f"Reservation not arrivable on {reservation.time}.")
+        
+    ## Error fix later
+    # else:
+        # print("hello")
+        # raise HTTPException(404, f"Reservation not arrivable on {reservation.time}.")
 
 @app.delete("/reservation/delete/{name}/{table_number}")
 def cancel_reservation(name: str, table_number : int):
