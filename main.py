@@ -1,6 +1,6 @@
-from http.client import HTTPException
-from fastapi import FastAPI
-from matplotlib.pyplot import table
+from json import JSONEncoder
+from fastapi import FastAPI, HTTPException
+# from matplotlib.pyplot import table
 from pymongo import MongoClient
 from pydantic import BaseModel
 
@@ -51,11 +51,11 @@ def update_reservation(reservation: Reservation, new_reservation_time: int):
     free = collection.find(check_time)
     if len(list(free)) == 0:
         collection.update_one(myquery, new)
+        raise HTTPException(200, "Success change")
         
-    ## Error fix later
-    # else:
-        # print("hello")
-        # raise HTTPException(404, f"Reservation not arrivable on {reservation.time}.")
+    else:
+        raise HTTPException(400, f"Reservation not arrivable on {reservation.time}.")
+
 
 @app.delete("/reservation/delete/{name}/{table_number}")
 def cancel_reservation(name: str, table_number : int):
