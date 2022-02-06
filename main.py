@@ -14,7 +14,7 @@ client = MongoClient('mongodb://localhost', 27017)
 db = client["exceed_restaurant"]
 
 # TODO fill in collection name
-collection = db["reservation"]
+collection = db["reserve"]
 
 app = FastAPI()
 
