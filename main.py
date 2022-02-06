@@ -10,10 +10,10 @@ class Reservation(BaseModel):
 client = MongoClient('mongodb://localhost', 27017)
 
 # TODO fill in database name
-db = client["<put your database name>"]
+db = client["exceed_restaurant"]
 
 # TODO fill in collection name
-collection = db["<put your collection name>"]
+collection = db["reserve"]
 
 app = FastAPI()
 
@@ -32,8 +32,10 @@ def reserve(reservation : Reservation):
     pass
 
 @app.put("/reservation/update/")
-def update_reservation(reservation: Reservation):
-    pass
+def update_reservation(reservation: Reservation, new_reservation: Reservation):
+    query = {"reservation": reservation}
+    new = { "$set": {"reservation": new_reservation}}
+    collection.update_one(query, new)
 
 @app.delete("/reservation/delete/{name}/{table_number}")
 def cancel_reservation(name: str, table_number : int):
