@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from fastapi import FastAPI
 from pymongo import MongoClient
 from pydantic import BaseModel
@@ -32,10 +33,14 @@ def reserve(reservation : Reservation):
     pass
 
 @app.put("/reservation/update/")
-def update_reservation(reservation: Reservation, new_reservation: Reservation):
-    query = {"reservation": reservation}
-    new = { "$set": {"reservation": new_reservation}}
-    collection.update_one(query, new)
+def update_reservation(reservation: Reservation, new_reservation_time: int):
+    myquery = {"name": reservation.name, "time": reservation.time}
+    free = collection.find(myquery)
+    new = { "$set": {"time": new_reservation_time}}
+    if free == None:
+        collection.update_one(myquery, new)
+    else:
+        return HTTPException(404, f"Reservation not arrivable on {reservation.time}.")
 
 @app.delete("/reservation/delete/{name}/{table_number}")
 def cancel_reservation(name: str, table_number : int):
